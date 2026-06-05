@@ -112,8 +112,8 @@ int run(const lob::Workload& w, const std::string& engine, int repeats, int cpu,
        << ", \"min\": " << runs[order.front()].msgs_per_s << ", \"max\": " << runs[order.back()].msgs_per_s
        << ", \"all\": [";
     for (std::size_t i = 0; i < runs.size(); ++i) js << (i ? ", " : "") << runs[i].msgs_per_s;
-    js << "]},\n  \"untimed_throughput_msgs_per_s\": {\"median\": " << untimed[untimed.size() / 2] << ", \"min\": "
-       << untimed.front() << ", \"max\": " << untimed.back() << "},\n  \"latency_ns_median_run\": {";
+    js << "]},\n  \"untimed_throughput_msgs_per_s\": {\"median\": " << untimed[untimed.size() / 2]
+       << ", \"min\": " << untimed.front() << ", \"max\": " << untimed.back() << "},\n  \"latency_ns_median_run\": {";
     bool first = true;
     for (int t = 0; t < 4; ++t) {
         if (!med.timed[t]) continue;
@@ -149,11 +149,16 @@ int main(int argc, char** argv) {
     int repeats = 5, cpu = -1;
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
-        if (a == "--reference") engine = "reference";
-        else if (a == "--repeats" && i + 1 < argc) repeats = std::stoi(argv[++i]);
-        else if (a == "--cpu" && i + 1 < argc) cpu = std::stoi(argv[++i]);
-        else if (a == "--out" && i + 1 < argc) out = argv[++i];
-        else if (path.empty()) path = a;
+        if (a == "--reference")
+            engine = "reference";
+        else if (a == "--repeats" && i + 1 < argc)
+            repeats = std::stoi(argv[++i]);
+        else if (a == "--cpu" && i + 1 < argc)
+            cpu = std::stoi(argv[++i]);
+        else if (a == "--out" && i + 1 < argc)
+            out = argv[++i];
+        else if (path.empty())
+            path = a;
         else {
             std::cerr << "usage: latency_harness FILE [--reference] [--repeats N] [--cpu N] [--out FILE]\n";
             return 2;

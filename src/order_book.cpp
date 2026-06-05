@@ -5,10 +5,7 @@
 namespace lob {
 
 OrderBook::OrderBook(const BookConfig& cfg)
-    : base_(cfg.base_price),
-      num_levels_(cfg.num_levels),
-      index_(cfg.max_id + 1, nullptr),
-      pool_(cfg.max_orders) {
+    : base_(cfg.base_price), num_levels_(cfg.num_levels), index_(cfg.max_id + 1, nullptr), pool_(cfg.max_orders) {
     for (SideBook& b : sides_) {
         b.levels.resize(num_levels_);
         b.bits.resize((num_levels_ + 63) / 64);

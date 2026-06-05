@@ -24,10 +24,15 @@ std::vector<Msg> random_stream(std::uint64_t seed, std::size_t n, Price levels) 
         const Qty qty = rng() % 50 == 0 ? 0 : static_cast<Qty>(1 + rng() % 20);
         const OrderId known = next > 1 ? 1 + rng() % (next - 1) : 1;
         switch (rng() % 10) {
-            case 0: case 1: case 2: case 3: out.push_back({MsgType::Add, side, 0, qty, next++, px}); break;
+            case 0:
+            case 1:
+            case 2:
+            case 3: out.push_back({MsgType::Add, side, 0, qty, next++, px}); break;
             case 4: out.push_back({MsgType::Add, side, 0, qty, rng() % 4 == 0 ? known : next++, px}); break;
-            case 5: case 6: out.push_back({MsgType::Cancel, side, 0, 0, rng() % 8 == 0 ? next + 5 : known, 0}); break;
-            case 7: case 8: out.push_back({MsgType::Modify, side, 0, qty, known, px}); break;
+            case 5:
+            case 6: out.push_back({MsgType::Cancel, side, 0, 0, rng() % 8 == 0 ? next + 5 : known, 0}); break;
+            case 7:
+            case 8: out.push_back({MsgType::Modify, side, 0, qty, known, px}); break;
             default: out.push_back({MsgType::Market, side, 0, static_cast<Qty>(rng() % 40), next++, 0}); break;
         }
     }
@@ -85,8 +90,8 @@ TEST(Invariants, RestingQuantityEqualsAddsMinusFillsMinusCancels) {
             if (e.type == EventType::Trade && m.type == MsgType::Market) filled += e.qty;
             if (e.type == EventType::Cancelled && m.type == MsgType::Cancel) cancelled += e.qty;
         }
-        const auto resting = static_cast<std::int64_t>(engine.book().resting_qty(Side::Buy) +
-                                                       engine.book().resting_qty(Side::Sell));
+        const auto resting =
+            static_cast<std::int64_t>(engine.book().resting_qty(Side::Buy) + engine.book().resting_qty(Side::Sell));
         ASSERT_EQ(resting, added - filled - cancelled);
     }
 }

@@ -93,20 +93,26 @@ Counts run_pipeline(const lob::Workload& w, int cpu, double& seconds) {
 int main(int argc, char** argv) {
     std::string path, engine = "lob";
     bool pipeline = false;
-    int cpu = -1;
+    int cpu = -1, loops = 1;
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
-        if (a == "--reference") engine = "reference";
-        else if (a == "--pipeline") pipeline = true;
-        else if (a == "--cpu" && i + 1 < argc) cpu = std::stoi(argv[++i]);
-        else if (path.empty()) path = a;
+        if (a == "--reference")
+            engine = "reference";
+        else if (a == "--pipeline")
+            pipeline = true;
+        else if (a == "--cpu" && i + 1 < argc)
+            cpu = std::stoi(argv[++i]);
+        else if (a == "--loops" && i + 1 < argc)
+            loops = std::stoi(argv[++i]);
+        else if (path.empty())
+            path = a;
         else {
-            std::cerr << "usage: replay FILE [--reference] [--pipeline] [--cpu N]\n";
+            std::cerr << "usage: replay FILE [--reference] [--pipeline] [--cpu N] [--loops N]\n";
             return 2;
         }
     }
     if (path.empty()) {
-        std::cerr << "usage: replay FILE [--reference] [--pipeline] [--cpu N]\n";
+        std::cerr << "usage: replay FILE [--reference] [--pipeline] [--cpu N] [--loops N]\n";
         return 2;
     }
     const lob::Workload w = lob::read_workload(path);
@@ -122,12 +128,17 @@ int main(int argc, char** argv) {
         } else {
             lob::MatchingEngine book(lob::book_config(w.header));
             c = run_inline(book, w, seconds);
+            for (int i = 1; i < loops; ++i) {
+                lob::MatchingEngine again(lob::book_config(w.header));
+                double s = 0;
+                run_inline(again, w, s);
+            }
             const auto bids = book.book().levels(lob::Side::Buy), asks = book.book().levels(lob::Side::Sell);
             std::cout << "final book: " << book.book().order_count() << " resting orders on " << bids.size()
                       << " bid and " << asks.size() << " ask levels\n";
         }
     }
-    std::cout << (pipeline ? "pipeline" : engine) << ": " << w.msgs.size() << " msgs in " << seconds << " s = "
-              << static_cast<double>(w.msgs.size()) / seconds / 1e6 << " M msgs/s; " << c.trades << " trades, "
-              << c.cancels << " cancels, " << c.rejects << " rejects, " << c.events << " events\n";
+    std::cout << (pipeline ? "pipeline" : engine) << ": " << w.msgs.size() << " msgs in " << seconds
+              << " s = " << static_cast<double>(w.msgs.size()) / seconds / 1e6 << " M msgs/s; " << c.trades
+              << " trades, " << c.cancels << " cancels, " << c.rejects << " rejects, " << c.events << " events\n";
 }

@@ -13,7 +13,7 @@
 namespace lob {
 
 struct BookConfig {
-    Price base_price = 0;           // lowest tradable price, in ticks
+    Price base_price = 0;  // lowest tradable price, in ticks
     std::size_t num_levels = 1 << 16;
     std::size_t max_orders = 1 << 20;  // resting orders, sizes the pool
     OrderId max_id = 1 << 20;          // ids are dense and engine-assigned
@@ -29,12 +29,10 @@ struct LevelView {
 // with a bitmap of non-empty levels so the next best price is found with a
 // count-trailing/leading-zeros scan instead of a walk over empty levels.
 class OrderBook {
-public:
+   public:
     explicit OrderBook(const BookConfig& cfg);
 
-    bool in_band(Price p) const {
-        return p >= base_ && static_cast<std::uint64_t>(p - base_) < num_levels_;
-    }
+    bool in_band(Price p) const { return p >= base_ && static_cast<std::uint64_t>(p - base_) < num_levels_; }
 
     std::optional<Price> best(Side s) const {
         const SideBook& b = sides_[idx(s)];
@@ -57,7 +55,7 @@ public:
     bool crossed() const;
     bool check_invariants() const;
 
-private:
+   private:
     struct SideBook {
         std::vector<PriceLevel> levels;
         std::vector<std::uint64_t> bits;

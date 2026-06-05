@@ -1,0 +1,41 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build (Release, portable flags)
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DLOB_NATIVE=OFF && cmake --build build -j
+      - name: Unit, fuzz and allocation tests
+        run: cd build && ctest --output-on-failure
+      - name: Replay smoke test
+        run: ./build/gen_workload --count 200000 --out w.bin && ./build/replay w.bin && ./build/replay w.bin --reference
+
+  sanitizers:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: AddressSanitizer + UndefinedBehaviorSanitizer
+        run: |
+          cmake -S . -B build-asan -DCMAKE_BUILD_TYPE=Debug -DLOB_SANITIZE=address,undefined -DLOB_BENCH=OFF
+          cmake --build build-asan -j
+          cd build-asan && UBSAN_OPTIONS=halt_on_error=1 ctest --output-on-failure
+      - name: ThreadSanitizer on the SPSC queue
+        run: |
+          cmake -S . -B build-tsan -DCMAKE_BUILD_TYPE=Debug -DLOB_SANITIZE=thread -DLOB_BENCH=OFF
+          cmake --build build-tsan -j --target lob_tests
+          TSAN_OPTIONS=halt_on_error=1 ./build-tsan/lob_tests --gtest_filter='Spsc.*'
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: clang-format
+        run: find include src apps bench tests -name '*.?pp' | xargs clang-format --dry-run --Werror
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

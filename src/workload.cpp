@@ -12,7 +12,7 @@ namespace lob {
 namespace {
 
 class LiveSet {
-public:
+   public:
     void insert(OrderId id) {
         pos_[id] = ids_.size();
         ids_.push_back(id);
@@ -28,7 +28,7 @@ public:
     bool empty() const { return ids_.empty(); }
     OrderId pick(std::mt19937_64& rng) const { return ids_[rng() % ids_.size()]; }
 
-private:
+   private:
     std::vector<OrderId> ids_;
     std::unordered_map<OrderId, std::size_t> pos_;
 };
@@ -73,7 +73,7 @@ Workload generate(const WorkloadParams& p) {
         if (r < p.add || (r < p.add + p.cancel && live.empty())) {
             const int off = depth(rng);
             const Price px = u(rng) < p.marketable ? (side == Side::Buy ? mid + 1 + off % 3 : mid - 1 - off % 3)
-                                                    : (side == Side::Buy ? mid - off : mid + 1 + off);
+                                                   : (side == Side::Buy ? mid - off : mid + 1 + off);
             m = {MsgType::Add, side, 0, size(rng), next_id++, px};
         } else if (r < p.add + p.cancel) {
             m = {MsgType::Cancel, Side::Buy, 0, 0, live.pick(rng), 0};

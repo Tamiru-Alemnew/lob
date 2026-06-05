@@ -11,9 +11,8 @@ namespace lob {
 // are chained through Order::next, so acquire and release are O(1) and the
 // matching path never touches the heap.
 class OrderPool {
-public:
-    explicit OrderPool(std::size_t capacity)
-        : nodes_(std::make_unique<Order[]>(capacity)), capacity_(capacity) {
+   public:
+    explicit OrderPool(std::size_t capacity) : nodes_(std::make_unique<Order[]>(capacity)), capacity_(capacity) {
         for (std::size_t i = 0; i + 1 < capacity; ++i) nodes_[i].next = &nodes_[i + 1];
         free_ = capacity ? &nodes_[0] : nullptr;
     }
@@ -37,7 +36,7 @@ public:
     std::size_t used() const { return used_; }
     std::size_t capacity() const { return capacity_; }
 
-private:
+   private:
     std::unique_ptr<Order[]> nodes_;
     Order* free_ = nullptr;
     std::size_t capacity_;

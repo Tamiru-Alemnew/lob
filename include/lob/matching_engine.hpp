@@ -11,7 +11,7 @@ namespace lob {
 // Single-instrument price-time priority matcher. Events are appended to a
 // caller-owned vector; reserve it once and the engine never allocates.
 class MatchingEngine {
-public:
+   public:
     explicit MatchingEngine(const BookConfig& cfg) : book_(cfg) {}
 
     void process(const Msg& m, std::vector<Event>& out);
@@ -25,7 +25,7 @@ public:
 
     const OrderBook& book() const { return book_; }
 
-private:
+   private:
     Qty match(OrderId taker, Side s, Price limit, bool limited, Qty q, std::vector<Event>& out);
 
     OrderBook book_;

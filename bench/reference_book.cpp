@@ -42,8 +42,7 @@ void ReferenceBook::process(const Msg& m, std::vector<Event>& out) {
 }
 
 template <class Book>
-Qty ReferenceBook::sweep(Book& book, OrderId taker, Side s, Price limit, bool limited, Qty q,
-                         std::vector<Event>& out) {
+Qty ReferenceBook::sweep(Book& book, OrderId taker, Side s, Price limit, bool limited, Qty q, std::vector<Event>& out) {
     while (q > 0 && !book.empty()) {
         auto lvl = book.begin();
         if (limited && (s == Side::Buy ? lvl->first > limit : lvl->first < limit)) break;

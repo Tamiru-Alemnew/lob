@@ -23,7 +23,7 @@ class SpscQueue {
     static_assert(Capacity >= 2 && (Capacity & (Capacity - 1)) == 0, "capacity must be a power of two");
     static_assert(std::is_trivially_copyable_v<T>);
 
-public:
+   public:
     bool try_push(const T& v) {
         const std::size_t tail = tail_.load(std::memory_order_relaxed);
         if (tail - head_cache_ == Capacity) {
@@ -50,7 +50,7 @@ public:
         return tail_.load(std::memory_order_acquire) - head_.load(std::memory_order_acquire);
     }
 
-private:
+   private:
     static constexpr std::size_t kMask = Capacity - 1;
 
     alignas(kCacheLine) std::atomic<std::size_t> head_{0};

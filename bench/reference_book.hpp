@@ -17,13 +17,13 @@ namespace lob {
 // and same events as MatchingEngine; used as the benchmark baseline and as
 // the oracle in the differential fuzz test.
 class ReferenceBook {
-public:
+   public:
     explicit ReferenceBook(const BookConfig& cfg) : base_(cfg.base_price), levels_(cfg.num_levels) {}
 
     void process(const Msg& m, std::vector<Event>& out);
     std::vector<LevelView> levels(Side s) const;
 
-private:
+   private:
     struct RefOrder {
         OrderId id;
         Qty qty;

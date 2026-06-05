@@ -9,9 +9,12 @@ int main(int argc, char** argv) {
     std::string out = "workload.bin";
     for (int i = 1; i + 1 < argc; i += 2) {
         const std::string k = argv[i], v = argv[i + 1];
-        if (k == "--seed") p.seed = std::stoull(v);
-        else if (k == "--count") p.count = std::stoull(v);
-        else if (k == "--out") out = v;
+        if (k == "--seed")
+            p.seed = std::stoull(v);
+        else if (k == "--count")
+            p.count = std::stoull(v);
+        else if (k == "--out")
+            out = v;
         else {
             std::cerr << "usage: gen_workload [--seed N] [--count N] [--out FILE]\n";
             return 2;

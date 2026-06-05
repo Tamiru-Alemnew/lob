@@ -9,7 +9,7 @@ using namespace lob;
 namespace {
 
 class BookTest : public ::testing::Test {
-protected:
+   protected:
     MatchingEngine engine{BookConfig{.base_price = 100, .num_levels = 256, .max_orders = 64, .max_id = 1000}};
     std::vector<Event> ev;
 
@@ -39,7 +39,9 @@ protected:
     }
 };
 
-Event trade(OrderId taker, OrderId maker, Price p, Qty q) { return {EventType::Trade, Reject::None, taker, maker, p, q}; }
+Event trade(OrderId taker, OrderId maker, Price p, Qty q) {
+    return {EventType::Trade, Reject::None, taker, maker, p, q};
+}
 
 TEST_F(BookTest, SamePriceFillsOldestFirst) {
     add(1, Side::Sell, 150, 5);
